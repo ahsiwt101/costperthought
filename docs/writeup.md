@@ -46,4 +46,6 @@ With two more weeks: run FP8-KV with offline-calibrated scales to measure it pro
 
 Start at `README.md`. Key files: `harness/serve.py` (per-cell vLLM engine builder — encodes the dtype conflict behind the AWQ+FP8 finding), `harness/budget_forcing.py` (the decode-time budget-cap mechanism), `harness/run_benchmark.py` / `harness/run_group.py` (serve → query → grade → log cost), `harness/cost.py` ($/query, $/correct-answer), `analysis/interaction_test.py` (bootstrap CIs), `benchmarks/prepare_*.py` + `benchmarks/graders/*.py` (dataset prep and grading), `dashboard/app.py` (Streamlit explorer, live at costperthought.streamlit.app).
 
-To reproduce: `pip install -r requirements.txt`, prep datasets, then `scripts/run_baseline.sh` and `scripts/run_sweep.sh` (or the `slurm/` jobs) on a datacenter GPU with vLLM. No GPU needed to explore results — `pip install -r dashboard/requirements.txt && streamlit run dashboard/app.py`, or use the live link. All 36 result cells are real measured runs, committed in `results/`; no keys or personal data are committed (HF token read from a gitignored `~/.hf_token`).
+To reproduce: `pip install -r requirements.txt`, prep datasets, then `scripts/run_baseline.sh` and `scripts/run_sweep.sh` (or the `slurm/` jobs) on a datacenter GPU with vLLM. No GPU needed to explore results — `pip install -r dashboard/requirements.txt && streamlit run dashboard/app.py`, or use the live link. All 36 result cells are real measured runs, committed in `results/`.
+
+Dashboard: costperthought.streamlit.app/ 
