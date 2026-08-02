@@ -1,0 +1,83 @@
+# CostPerThought sweep grid definition.
+# Budget-cap token values (marked TBD) get filled in after Phase 2 baseline
+# calibration, from the empirical unlimited-budget trace-length distribution
+# (see harness/run_benchmark.py --mode calibrate).
+
+model:
+  name: "DeepSeek-R1-Distill-Qwen-7B"
+  hf_id_fp16: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+  hf_id_awq: "jakiAJK/DeepSeek-R1-Distill-Qwen-7B_AWQ"
+  max_context: 32768
+
+weight_precision:
+  - name: fp16
+    quantization: null
+    hf_id: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+  - name: awq_int4
+    quantization: awq
+    hf_id: "jakiAJK/DeepSeek-R1-Distill-Qwen-7B_AWQ"
+
+kv_cache_precision:
+  - name: fp16
+    vllm_kv_cache_dtype: auto
+  - name: fp8
+    vllm_kv_cache_dtype: fp8_e4m3
+
+reasoning_budget:
+  # tokens allowed in the <think> phase before budget forcing kicks in.
+  # "unlimited" = model's natural stopping behavior (own EOS/</think>), used
+  # for baseline calibration. The three capped levels are set as a fraction
+  # of the *median* unlimited trace length -- PER BENCHMARK, since math vs.
+  # gpqa vs. code trace lengths differ substantially. max_think_tokens is a
+  # dict keyed by benchmark name; scripts/run_baseline.sh fills these in
+  # after Phase 2 calibration (see docs/writeup.md, Approach section).
+  - name: unlimited
+    max_think_tokens: null
+  # Calibrated from Phase 4 (job 707449): 0.75/0.50/0.25 * per-benchmark median
+  # unlimited think-length (math median~910, gpqa~6300, code~5440 tokens).
+  - name: budget_75pct
+    max_think_tokens: {math: 682, gpqa: 4727, code: 4079}
+  - name: budget_50pct
+    max_think_tokens: {math: 455, gpqa: 3151, code: 2719}
+  - name: budget_25pct
+    max_think_tokens: {math: 227, gpqa: 1575, code: 1359}
+
+benchmarks:
+  - name: math
+    source: "HuggingFaceH4/MATH-500"
+    n: 150
+    grader: benchmarks.graders.math_grader
+  - name: gpqa
+    source: "Idavidrein/gpqa"
+    subset: "gpqa_diamond"
+    n: 100
+    grader: benchmarks.graders.mc_grader
+  - name: code
+    source: "livecodebench/code_generation_lite"
+    n: 100
+    grader: benchmarks.graders.code_grader
+
+sampling:
+  temperature: 0.6      # DeepSeek-R1 recommended non-zero temp for reasoning
+  top_p: 0.95
+  max_tokens_total: 16384  # think+answer ceiling; R1 traces routinely exceed 8192
+  seed: 42
+  n_repeats: 1           # bump to 3+ for pass@k / self-consistency if GPU budget allows
+
+gpu_cost:
+  # Compute was actually run FREE on an internal GPU cluster (1x datacenter GPU).
+  # The dollar figures use a market datacenter-GPU on-demand rate as the cost BASIS
+  # so $/correct-answer stays a portable, real-money metric - measured throughput
+  # is genuine wall-clock; only the price multiplier is a reference.
+  provider: "internal GPU cluster - priced at market GPU reference rate"
+  instance: "datacenter GPU (1x)"
+  usd_per_gpu_hour: 2.40   # market datacenter-GPU on-demand reference (~$2.00-2.40/GPU-hr)
+  note: >
+    $/correct-answer = (usd_per_gpu_hour / 3600) * mean_wall_clock_seconds_per_query
+    / accuracy_fraction, computed per grid cell from measured throughput under
+    vLLM continuous batching (not a theoretical FLOPs estimate). Compute ran on
+    free cluster hardware; usd_per_gpu_hour is a market reference so numbers transfer.
+
+output:
+  results_dir: "results/"
+  raw_log_format: "jsonl"   # one line per (config, benchmark, problem)

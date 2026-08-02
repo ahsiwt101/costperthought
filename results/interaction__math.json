@@ -1,0 +1,37 @@
+{
+  "benchmark": "math",
+  "tight_budget": "budget_25pct",
+  "pairwise_interactions": {
+    "weight_x_budget": {
+      "pair": "weight x budget",
+      "pair_label": "weight-quant (AWQ-INT4) x tight budget",
+      "acc_baseline": 0.8066666666666666,
+      "acc_only_weight": 0.78,
+      "acc_only_budget": 0.6333333333333333,
+      "acc_both": 0.64,
+      "interaction_effect": 0.033333333333333326,
+      "interaction_95ci": [
+        -0.10666666666666669,
+        0.17333333333333334
+      ],
+      "significant": false,
+      "interpretation": "No significant interaction -- knobs compose independently"
+    },
+    "kv_x_budget": {
+      "pair": "kv x budget",
+      "pair_label": "kv-quant (FP8) x tight budget",
+      "acc_baseline": 0.8066666666666666,
+      "acc_only_kv": 0.0,
+      "acc_only_budget": 0.6333333333333333,
+      "acc_both": 0.006666666666666667,
+      "interaction_effect": 0.18,
+      "interaction_95ci": [
+        0.07999999999999995,
+        0.27999999999999997
+      ],
+      "significant": true,
+      "interpretation": "Sub-additive: knobs partially cancel"
+    }
+  },
+  "weight_x_kv": "NOT MEASURABLE -- AWQ-INT4 + FP8-KV cannot be composed in vLLM 0.11.0 (dtype conflict: AWQ requires fp16, FP8-KV attention requires bf16). This is itself a finding: two 'individually safe' knobs that don't compose."
+}

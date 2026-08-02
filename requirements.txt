@@ -1,0 +1,25 @@
+# Serving (install on the GPU host)
+vllm>=0.7.0
+
+# Client / orchestration
+openai>=1.30.0
+requests>=2.31.0
+pyyaml>=6.0
+tqdm>=4.66.0
+
+# Data
+datasets>=2.19.0
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Grading
+sympy>=1.12          # math answer normalization/equivalence checking
+regex>=2024.5.15
+
+# Analysis
+scipy>=1.13.0
+statsmodels>=0.14.0
+
+# Dashboard
+streamlit>=1.35.0
+plotly>=5.22.0

@@ -1,0 +1,6 @@
+# Dashboard-only deps (Streamlit Community Cloud / any GPU-free host).
+# Deliberately excludes vllm and the serving stack from the repo-root
+# requirements.txt: the dashboard just reads results/summary.jsonl.
+streamlit>=1.35.0
+pandas>=2.2.0
+plotly>=5.22.0

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+.dashboard-venv/
+*.hf_token
+
+# Input datasets are downloaded on the cluster, not committed.
+data/*.jsonl
+!data/.gitkeep
+
+# Promo video project is a separate artifact, not part of the submission.
+video/
+
+.DS_Store
