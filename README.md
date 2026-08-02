@@ -75,14 +75,6 @@ On a Slurm cluster, the same pipeline is `slurm/setup.sbatch` → `slurm/smoke.s
 | [dashboard/app.py](dashboard/app.py) | Streamlit Pareto-frontier explorer | The reusable infra artifact (live link above) |
 | [slurm/](slurm/) | setup / smoke / calibrate / sweep jobs | The exact Slurm pipeline used to produce the data |
 
-## What is real vs. external vs. incomplete
-
-- **Real:** all 36 result cells in `results/` are measured runs on GPU hardware, not synthetic or mocked.
-- **External:** datasets download from Hugging Face (MATH-500, GPQA-diamond, LiveCodeBench). GPQA is gated: accept the `Idavidrein/gpqa` license and provide a token. Datasets are not committed.
-- **Requires a GPU:** only the serving step (`harness/serve.py` + vLLM). Everything else - benchmark prep, grading, cost math, analysis, dashboard - runs anywhere.
-- **Incomplete:** FP8 KV-cache is measured as *broken out of the box*, not measured *calibrated* - see the write-up's "what I'd improve next."
-- **No secrets committed.** The Hugging Face token is read at runtime from a gitignored `~/.hf_token`; no passwords, API keys, or personal data are in the repo.
-
 ## Why DeepSeek-R1-Distill-Qwen-7B
 
 - Maintained AWQ-INT4 checkpoint available (`jakiAJK/DeepSeek-R1-Distill-Qwen-7B_AWQ`) - the quantization knob is a real, production-supported config, not a hand-rolled reimplementation.
