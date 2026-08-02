@@ -11,4 +11,7 @@ data/*.jsonl
 # Promo video project is a separate artifact, not part of the submission.
 video/
 
+# Local working copy of the write-up, not part of the public repo.
+docs/writeup_final.md
+
 .DS_Store
